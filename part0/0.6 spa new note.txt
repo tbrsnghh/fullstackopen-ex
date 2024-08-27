@@ -1,0 +1,11 @@
+sequenceDiagram  
+    participant browser  
+    participant server  
+    Note right of browser: User fills in note form and submits a new note ('save' button)
+    note right of browser: spa.js creates new object with content and date and pushes it to notes array,<br/> redraw notes, sends new object to server in request body as JSON
+    browser->>server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    activate server
+    note left of server: Server adds request note to notes array and send JSON to browser  
+    server-->>browser: HTTP Status Code 201, Created 
+    server-->>browser: {"message":"note created"}
+    deactivate server
