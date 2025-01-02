@@ -70,6 +70,7 @@ const App = () => {
             message: `Error: ${error.response.data.error}`,
             status: "error",
           });
+          console.log(error.response.data.error);
         });
     }
     setNewName("");
@@ -87,6 +88,7 @@ const App = () => {
           status: "success",
         });
       }).catch((error) => {
+
         setNotification({
           message: `Error: ${error.response.data.error}`,
           status: "error",
