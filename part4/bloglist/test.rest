@@ -1,0 +1,13 @@
+### GET /api/blogs
+http://localhost:3003/api/blogs
+
+### POST /api/blogs
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Hello FullstackOpen",
+  "author": "Pacis Baron",
+  "url": "https://example.com",
+  "likes": 7
+}
