@@ -4,6 +4,11 @@ const blogsRouter = express.Router()
 
 blogsRouter.get('/', async (req, res) => {
   const blogs = await Blog.find({})
+  blogs.forEach(blog => {
+    blog.id = blog._id.toString()
+    delete blog._id
+    delete blog.__v
+  })
   res.json(blogs)
 })
 
