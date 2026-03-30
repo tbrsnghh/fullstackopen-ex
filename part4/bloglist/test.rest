@@ -11,3 +11,15 @@ Content-Type: application/json
   "url": "https://example.com",
   "likes": 7
 }
+
+### POST 
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "nghha",
+  "name": "haf mong mer",
+  "password": "2812nghh@"
+}
+### 
+GET http://localhost:3003/api/users
