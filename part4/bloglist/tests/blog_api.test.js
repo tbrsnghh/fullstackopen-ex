@@ -7,14 +7,32 @@ const mongoose = require('mongoose')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
+let token = null
 // before 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('secret', 10)
+  const user = new User({ 
+    username: 'root', 
+    name: 'Admin',
+    passwordHash 
+  })
+  const savedUser = await user.save()
+
+  const loginResponse = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'secret' })
+
+  token = loginResponse.body.token
+
+  const blogObjects = initialBlogs.map(blog => new Blog({ ...blog, user: savedUser._id }))
+  const promiseArray = blogObjects.map(blog => blog.save())
+  await Promise.all(promiseArray)
 })
 
 // start test
@@ -47,6 +65,7 @@ describe('Test blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -67,6 +86,7 @@ describe('Test blogs', () => {
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
 
@@ -81,6 +101,7 @@ describe('Test blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(blogWithoutTitle)
       .expect(400)
   })
@@ -92,7 +113,7 @@ describe("When sending a delete request, i want to test", () => {
     const firstBlog = await results.body[0];
     // console.log(firstBlog.id);
 
-    await api.delete(`/api/blogs/${firstBlog.id}`).expect(204);
+    await api.delete(`/api/blogs/${firstBlog.id}`).set('Authorization', `Bearer ${token}`).expect(204);
 
     const result = await api.get("/api/blogs");
     const blogsRecieved = await result.body;
