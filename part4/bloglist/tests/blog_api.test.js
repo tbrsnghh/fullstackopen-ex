@@ -111,7 +111,6 @@ describe("When sending a delete request, i want to test", () => {
   test("that if id is valid, status is 204", async () => {
     const results = await api.get("/api/blogs");
     const firstBlog = await results.body[0];
-    // console.log(firstBlog.id);
 
     await api.delete(`/api/blogs/${firstBlog.id}`).set('Authorization', `Bearer ${token}`).expect(204);
 
